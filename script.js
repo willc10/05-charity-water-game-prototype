@@ -166,12 +166,12 @@ function endGame() {
 
 // Show pause menu only if game is running
 function showPauseMenu() {
-  if (!gameRunning) return; // Don't pause if game hasn't started
+  // Remove the check for gameRunning so pause menu always opens
   isPaused = true;
   pauseMenu.style.display = 'flex';
   // Set the dropdown to current difficulty
   pauseDifficulty.value = difficultySelect.value;
-  // Stop the animation and beat spawning
+  // Stop the animation and beat spawning if running
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
@@ -180,28 +180,31 @@ function showPauseMenu() {
 
 // Hide pause menu and resume game
 function resumeGame() {
-  if (!gameRunning) return; // Don't resume if game hasn't started
+  // Always allow resume to close the pause menu, even if game isn't running
   isPaused = false;
   pauseMenu.style.display = 'none';
+
   // Update the main difficulty to match the pause menu
   difficultySelect.value = pauseDifficulty.value;
 
-  // Update dropsPerSpawn and fallSpeed to match the new difficulty
-  const difficulty = difficultySelect.value;
-  if (difficulty === 'medium') {
-    dropsPerSpawn = 2;
-    fallSpeed = 2;
-  } else if (difficulty === 'hard') {
-    dropsPerSpawn = 2;
-    fallSpeed = 3;
-  } else {
-    dropsPerSpawn = 1;
-    fallSpeed = 2;
-  }
+  // Only resume animation and beat spawning if the game is running
+  if (gameRunning) {
+    // Update dropsPerSpawn and fallSpeed to match the new difficulty
+    const difficulty = difficultySelect.value;
+    if (difficulty === 'medium') {
+      dropsPerSpawn = 2;
+      fallSpeed = 2;
+    } else if (difficulty === 'hard') {
+      dropsPerSpawn = 2;
+      fallSpeed = 3;
+    } else {
+      dropsPerSpawn = 1;
+      fallSpeed = 2;
+    }
 
-  // Resume animation and beat spawning
-  animationFrameId = requestAnimationFrame(updateBeats);
-  beatInterval = setInterval(spawnBeat, 1000);
+    animationFrameId = requestAnimationFrame(updateBeats);
+    beatInterval = setInterval(spawnBeat, 1000);
+  }
 }
 
 // Reset game from pause menu
